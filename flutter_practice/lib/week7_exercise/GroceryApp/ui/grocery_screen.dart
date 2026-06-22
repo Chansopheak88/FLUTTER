@@ -12,23 +12,18 @@ class GroceryScreen extends StatefulWidget {
 }
 
 class _GroceryScreenState extends State<GroceryScreen> {
-  Future<void> onCreate(BuildContext context) async {
-    // ---------------------------------------------
-    // Navigate to the form screen using showModalBottomSheet
-    // ---------------------------------------------
+  void onGroceryCreated(GroceryItem groceryItem) {
+    setState(() {
+      allGroceryItems.add(groceryItem);
+    });
+  }
 
-    // https://api.flutter.dev/flutter/material/showModalBottomSheet.html
-    final newItem = await showModalBottomSheet<GroceryItem>(
+  void onAddPressed() {
+    showModalBottomSheet(
       isScrollControlled: true,
-      builder: (context) => GroceryItemForm(),
+      builder: (context) => GroceryItemForm(onGroceryCreated: onGroceryCreated,),
       context: context,
     );
-    if (newItem == null) {
-      return;
-    }
-    setState(() {
-      allGroceryItems.add(newItem);
-    });
   }
 
   @override
@@ -36,11 +31,6 @@ class _GroceryScreenState extends State<GroceryScreen> {
     Widget content = const Center(child: Text('No items added yet.'));
 
     if (allGroceryItems.isNotEmpty) {
-      // ---------------------------------------------
-      //  Loop on groceries with an ListView builder
-      //  For each grocery items, create a GroceryTile (grocery_tile.dart)
-      // ---------------------------------------------
-      // https://api.flutter.dev/flutter/widgets/ListView-class.html
       content = ListView.builder(
         itemCount: allGroceryItems.length,
         itemBuilder: (context, index) {
@@ -54,7 +44,7 @@ class _GroceryScreenState extends State<GroceryScreen> {
         title: const Text('Your Groceries'),
         actions: [
           IconButton(
-            onPressed: () => onCreate(context),
+            onPressed: () => onAddPressed(),
             icon: const Icon(Icons.add),
           ),
         ],

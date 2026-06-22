@@ -1,23 +1,11 @@
-// ---------------------------------------------
-// Create a new statefull widget : GroceryForm
-// ---------------------------------------------
-
-// The form shall be composed of 2 text fields:
-// -	Name of the grocery item
-//-	Quantity (number only)
-
-// ⚠️  For now we don’t select the grocery type, we assume it’s always food
-
-// The form shall be composed of 2 buttons:
-//-	Cancel button
-// -	Add item button
 
 
 import 'package:exercise_1/week7_exercise/GroceryApp/models/grocery.dart';
 import 'package:flutter/material.dart';
 
 class GroceryItemForm extends StatefulWidget {
-  const GroceryItemForm({super.key});
+  const GroceryItemForm({super.key, required this.onGroceryCreated});
+  final ValueChanged<GroceryItem> onGroceryCreated; //passes item back to the parent widget
 
   @override
   State<GroceryItemForm> createState() => _GroceryItemFormState();
@@ -28,17 +16,22 @@ class _GroceryItemFormState extends State<GroceryItemForm> {
   final TextEditingController trailingController = TextEditingController();
 
   void onCancel() {
-    Navigator.pop(context, null);
+    Navigator.pop(context);
   }
 
   void onSubmit() {
-    final newItem = GroceryItem(
-      id: DateTime.now().toString(),
-      name: titleController.text,
-      quantity: int.tryParse(trailingController.text) ?? 1,
-      category: GroceryCategory.fruit,
-    );
-    Navigator.pop(context, newItem);
+    String title = titleController.text;
+    int? amount = int.tryParse(trailingController.text);
+
+    if (amount != null) {
+      GroceryItem newItem = GroceryItem(
+        name: title,
+        quantity: amount,
+        category: GroceryCategory.fruit,
+      );
+      widget.onGroceryCreated(newItem);
+      Navigator.pop(context);
+    }
   }
 
   @override
